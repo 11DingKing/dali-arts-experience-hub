@@ -1,0 +1,3 @@
+package worker
+import ("context"; "testing"; "time"; "log/slog"; "github.com/11DingKing/dali-arts-experience-hub/internal/domain"; "github.com/11DingKing/dali-arts-experience-hub/internal/repository"; "github.com/11DingKing/dali-arts-experience-hub/internal/storage/sqlite")
+func TestDali016FailedOutboxRemainsRetry(t *testing.T){s:=newWorkerStore(t);now:=time.Now().UTC();seedWorkerRecords(t,s,now);h:=&recordingHandlers{eventError:context.DeadlineExceeded};r:=New(s,h,h,time.Millisecond,2,slog.Default());if err:=r.processOutbox(context.Background());err!=nil{t.Fatal(err)};events,err:=s.ClaimOutbox(context.Background(),now.Add(time.Hour),2);if err!=nil{t.Fatal(err)};if len(events)==0{t.Fatal("failed event was completed")}}
