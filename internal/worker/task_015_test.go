@@ -1,0 +1,3 @@
+package worker
+import ("context"; "testing"; "time"; "log/slog"; "github.com/11DingKing/dali-arts-experience-hub/internal/domain"; "github.com/11DingKing/dali-arts-experience-hub/internal/repository"; "github.com/11DingKing/dali-arts-experience-hub/internal/storage/sqlite")
+func TestDali015SuccessfulJobCannotBeClaimedAgain(t *testing.T){s:=newWorkerStore(t);now:=time.Now().UTC();seedWorkerRecords(t,s,now);r:=New(s,&recordingHandlers{},&recordingHandlers{},time.Millisecond,2,slog.Default());if err:=r.processJobs(context.Background());err!=nil{t.Fatal(err)};jobs,err:=s.ClaimDueJobs(context.Background(),now.Add(time.Hour),2,time.Second);if err!=nil{t.Fatal(err)};if len(jobs)!=0{t.Fatal("completed job claimed again")}}
